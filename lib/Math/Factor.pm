@@ -1,4 +1,4 @@
-# $Id: Factor.pm,v 0.13 2004/01/13 15:01:06 sts Exp $
+# $Id: Factor.pm,v 0.14 2004/01/13 15:01:06 sts Exp $
 
 package Math::Factor;
 
@@ -7,7 +7,7 @@ use integer;
 use strict 'vars';
 use warnings;
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 use Exporter;
 use base qw(Exporter);
@@ -69,7 +69,7 @@ Factorises numbers.
  $factors = factor (\@numbers);
 
 Each number within @numbers will be entirely factorised and its factors will be
-saved within the hash ref $factors, accessible by the number itself e.g the factors of 9 may
+saved within the hash ref $factors, accessible by the number e.g the factors of 9 may
 be accessed by @{$$factors{9}}.
 
 Ranges may be evaluated by providing a two-dimensional array. 
