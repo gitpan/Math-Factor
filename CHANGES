@@ -1,5 +1,10 @@
 Revision history for Perl extension Math::Factor.
 
+0.06 2004/01/08
+ - each_factor() and each_match() store tmp
+   data in arrays, that don't interfere with
+   each other.
+
 0.05 2004/01/07
  - iteration over factors and multiplication
    matches by each_factor() and each_match().
