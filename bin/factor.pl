@@ -25,7 +25,7 @@ factors
 
 EOT
 
-    foreach (sort {$a <=> $b} keys %$factors) {
+    for (sort {$a <=> $b} keys %$factors) {
         local ($ul, $,);   
         $ul = '-' x length;
         formeval('factors'); write; 
@@ -43,7 +43,7 @@ matches
 
 EOT
 
-    foreach (sort {$a <=> $b} keys %$matches) {
+    for (sort {$a <=> $b} keys %$matches) {
         local ($ul, $i);
         $ul = '-' x length;
         formeval('match_number'); write;

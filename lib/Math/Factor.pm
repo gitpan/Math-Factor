@@ -1,4 +1,4 @@
-# $Id: Factor.pm,v 0.21 2004/01/18 07:31:17 sts Exp $
+# $Id: Factor.pm,v 0.22 2004/01/18 07:31:17 sts Exp $
 
 package Math::Factor;
 
@@ -8,17 +8,14 @@ use integer;
 use strict 'vars';
 use warnings;
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
-our (@EXPORT_OK, %EXPORT_TAGS, @subs_factor,
-     @subs_match, @subs);
+our (@EXPORT_OK, %EXPORT_TAGS, @subs);
 
-@subs_factor = qw(factor each_factor);
-@subs_match = qw(match each_match);
-@subs = (@subs_factor, @subs_match);
+@subs = qw(factor each_factor match each_match);
 
 @EXPORT_OK = @subs;
-%EXPORT_TAGS = (  all     =>    [ @subs ],
+%EXPORT_TAGS = (  all =>    [ @subs ],
 );
 
 our $Skip_multiple;
@@ -36,21 +33,21 @@ Math::Factor - factorise numbers and calculate matching multiplications.
 
 =head1 SYNOPSIS
 
- use Math::Factor q/:all/;
+ use Math::Factor ':all';
 
  @numbers = qw(9 30107);
 
  # data manipulation
- $factors = factor (\@numbers);
- $matches = match ($factors);
+ $factors = factor(\@numbers);
+ $matches = match($factors);
 
  # factors iteration
- while ($factor = each_factor ($numbers[0], $factors)) {
+ while ($factor = each_factor($numbers[0], $factors)) {
      print "$factor\n";
  }
 
  # matches iteration
- while (@match = each_match ($numbers[0], $matches)) {
+ while (@match = each_match($numbers[0], $matches)) {
      print "$numbers[0] == $match[0] * $match[1]\n";
  }
 
@@ -64,7 +61,7 @@ C<Math::Factor> factorises numbers by applying trial divison.
 
 Factorises numbers.
 
- $factors = factor (\@numbers);
+ $factors = factor(\@numbers);
 
 Each number within @numbers will be entirely factorised and its factors will be
 saved within the hashref $factors, accessible by the number e.g the factors of 9 may
@@ -86,17 +83,16 @@ certain numbers may be entirely disabled by supplying *. 1-$ is equivalent to *.
 =cut
 
 sub factor {
-    my $numbers = $_[0];
-    croak q~usage: factor (\@numbers)~
-      unless @$numbers && ref $numbers eq 'ARRAY';
+    my $numbers = shift;
+    croak q~Usage: factor(\@numbers)~ unless @$numbers;
 
     my (%factor, $number, $i, $limit);
-    foreach (@$numbers) {
+    for (@$numbers) {
         $i = 0; 
         if (ref $_) { 
 	    $number = $$_[0];
 	    if ($$_[1] =~ /-/) { 
-    	        my @range = split /-/, $$_[1];
+    	        my @range = split '-', $$_[1];
 		$i = $range[0];
 		if ($range[1] eq '$') { $limit = $number } 
 		else { $limit = $range[1] }
@@ -122,7 +118,7 @@ sub factor {
 
 Evaluates matching multiplications.
 
- $matches = match ($factors);
+ $matches = match($factors);
 
 The factors of each number within the hashref $factors will be multplicated against
 each other and results that equal the number itself, will be saved to the hashref $matches.
@@ -144,20 +140,19 @@ Example:
 =cut
 
 sub match {
-    my $factors = $_[0];
-    croak q~usage: match ($factors)~
-      unless %$factors && ref $factors eq 'HASH';
+    my $factors = shift;
+    croak q~Usage: match($factors)~ unless %$factors;
 
     my (%matches, $i, @previous_bases, $skip);
-    foreach (keys %$factors) {
+    for (keys %$factors) {
         $i = 0;
         my @cmp = my @base = @{$$factors{$_}};
-        foreach my $base (@base) { 
-            foreach my $cmp (@cmp) {
+        for my $base (@base) { 
+            for my $cmp (@cmp) {
                 if ($cmp >= $base && $base * $cmp == $_) {
 		    if ($Skip_multiple) {
 			$skip = 0;
-			foreach (@previous_bases) {
+			for (@previous_bases) {
 			    $skip = 1 if $base % $_ == 0;
 		        }
 	            }    
@@ -178,7 +173,7 @@ sub match {
 
 Returns each factor of a number as string.
 
- while ($factor = each_factor ($number, $factors)) {
+ while ($factor = each_factor($number, $factors)) {
      print "$factor\n";
  }
 
@@ -190,8 +185,8 @@ after usage of each_factor().
 
 sub each_factor {
     my ($number, $factors) = @_;
-    croak q~usage: each_factor ($number, $factors)~
-      unless $number && ref $factors eq 'HASH';
+    croak q~Usage: each_factor($number, $factors)~
+      unless $number && %$factors;
 
     unless (${__PACKAGE__."::each_factor_$number"}) {
         @{__PACKAGE__."::each_factor_$number"} = @{$$factors{$number}};
@@ -208,7 +203,7 @@ sub each_factor {
 
 Returns each match of a number as string.
 
- while (@match = each_match ($number, $matches)) {
+ while (@match = each_match($number, $matches)) {
      print "$number == $match[0] * $match[1]\n";
  }
 
@@ -220,8 +215,8 @@ after usage of each_match().
 
 sub each_match {
     my ($number, $matches) = @_;
-    croak q~usage: each_match ($number, $matches)~
-      unless $number && ref $matches eq 'HASH';
+    croak q~Usage: each_match($number, $matches)~
+      unless $number && %$matches;
 
     unless (${__PACKAGE__."::each_match_$number"}) {
         @{__PACKAGE__."::each_match_$number"} = @{$$matches{$number}};

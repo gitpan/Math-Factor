@@ -16,8 +16,8 @@ SCRIPTS
 
 bin/factor.pl
 
-Interface to Math::Factor that contains predefined options
-and outputs results.
+Interface to Math::Factor that factorises numbers
+and outputs matches.
 
 LICENSE
 
