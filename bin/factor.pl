@@ -3,88 +3,87 @@
 use strict;
 use warnings;
 
-use Math::Factor qw/factor match/;
+$SIG{__WARN__} = sub { return '' };
 
-my (@numbers, $factors, $matches, $format_factors,
-    $format_match_number, $format_match_matches);
+use Math::Factor qw(factor match);
+
+our (@numbers, $factors, $matches, %form, $ul, $i);
     
 @numbers = qw(9 30107);
 
 $factors = factor(\@numbers);
 $matches = match($factors);
 
-print <<'EOT';
+show_factors();
+show_matches();
+
+sub show_factors {
+    print <<'EOT';
 -------
 FACTORS
 -------
 
 EOT
 
-my $ul;
-eval $format_factors; 
-croak $@ if $@;
-
-foreach (sort {$a <=> $b} keys %$factors) {
-    $ul = '-' x length;
-    write; local $, = "\t";
+    foreach (sort {$a <=> $b} keys %$factors) {
+        local ($ul, $,);   
+        $ul = '-' x length;
+        _formwrite('factors'); 
     
-    print <<"EOT";
-@{$$factors{$_}}
+        $, = "\t"; 
+        print "@{$$factors{$_}}\n\n";
+    }
+}
 
-
-EOT
-}	
-			
-print <<'EOT';
+sub show_matches {	
+    print <<'EOT';
 -------
 MATCHES
 -------
 
 EOT
 
-no warnings;
-foreach (sort {$a <=> $b} keys %$matches) {
-    my $ul = '-' x length;
+    foreach (sort {$a <=> $b} keys %$matches) {
+        local ($ul, $i);
+        $ul = '-' x length;
+        _formwrite('match_number');
+    
+        for ($i = 0; $$matches{$_}[$i]; $i++) { 
+            _formwrite('match_matches'); 
+        }
 
-    eval $format_match_number;
-    croak $@ if $@;
+        print "\n\n";
+    }
+}    
+
+sub _formwrite {
+    my $ident = shift;
+    
+    eval $form{$ident};
+    if ($@) { require Carp; Carp::croak $@; }
     write;
-
-    my $i;
-    eval $format_match_matches;
-    croak $@ if $@;
-
-    for ($i = 0; $$matches{$_}[$i]; $i++) { write }
-
-    print <<'EOT';
-
-
-EOT
 }
 
 BEGIN {
-$format_factors = '
-  	format =
-@<<<<<<<<<<<<<<<<<<<<<<<<<
-$_
-@<<<<<<<<<<<<<<<<<<<<<<<<<
-$ul
-.
-';
-
-$format_match_number = '
+    $form{factors} = '
     format =
 @<<<<<<<<<<<<<<<<<<<<<<<<<
 $_
 @<<<<<<<<<<<<<<<<<<<<<<<<<
 $ul
-.
-';
+.';
 
-$format_match_matches = '
+    $form{match_number} = '
+    format =
+@<<<<<<<<<<<<<<<<<<<<<<<<<
+$_
+@<<<<<<<<<<<<<<<<<<<<<<<<<
+$ul
+.';
+
+    $form{match_matches} = '
     format =
 @<<<<<<<<<<<* @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-$$matches{$_}[$i][0] $$matches{$_}[$i][1]
-.
-';
+$$matches{$_}[$i][0], $$matches{$_}[$i][1]
+.';
 }

@@ -1,14 +1,14 @@
-# $Id: Factor.pm,v 0.15 2004/01/13 15:01:06 sts Exp $
+# $Id: Factor.pm,v 0.16 2004/01/13 15:01:06 sts Exp $
 
 package Math::Factor;
 
 use 5.006;
-use base qw(Exporter);
+use base(Exporter);
 use integer;
 use strict 'vars';
 use warnings;
 
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 
 our (@EXPORT_OK, %EXPORT_TAGS, @subs_factor,
      @subs_match, @subs);
