@@ -1,9 +1,9 @@
 #
-# $Id: Factor.pm,v 0.11 2004/01/12 10:17:06 sts Exp $
+# $Id: Factor.pm,v 0.12 2004/01/13 15:01:06 sts Exp $
 
 package Math::Factor;
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 use integer;
 use strict 'vars';
@@ -40,19 +40,19 @@ Math::Factor - factorise integers and calculate matching multiplications.
 
  use Math::Factor q/:all/;
 
- @numbers = (9);
+ @numbers = qw(9 30107);
 
  # data manipulation
- %factors = factor (\@numbers);
- %matches = match (\%factors);
+ $factors = factor (\@numbers);
+ $matches = match ($factors);
 
  # factors iteration
- while ($factor = each_factor(\%factors, $numbers[0])) {
+ while ($factor = each_factor ($numbers[0], $factors)) {
      print "$factor\n";
  }
 
  # matches iteration
- while (@match = each_match(\%matches, $numbers[0])) {
+ while (@match = each_match ($numbers[0], $matches)) {
      print "$numbers[0] == $match[0] * $match[1]\n";
  }
 
@@ -66,11 +66,11 @@ see above.
 
 Factorises numbers.
 
- %factors = factor (\@numbers);
+ $factors = factor (\@numbers);
 
 Each number within @numbers will be entirely factorised and its factors will be
-saved within %factors, accessible by the number itself e.g the factors of 9 may
-be accessed by @{$factors{9}}.
+saved within the hash ref $factors, accessible by the number itself e.g the factors of 9 may
+be accessed by @{$$factors{9}}.
 
 Ranges may be evaluated by providing a two-dimensional array. 
 
@@ -90,7 +90,7 @@ certain numbers may be entirely disabled by supplying *. 1-$ is equivalent to *.
 sub factor {
     my $data_ref = $_[0];
     croak q~usage: factor (\@numbers)~
-      unless ref $data_ref eq 'ARRAY' && @$data_ref;
+      unless @$data_ref && ref $data_ref eq 'ARRAY';
 
     my (%factor, $number, $i, $limit);
     foreach (@$data_ref) {
@@ -116,27 +116,27 @@ sub factor {
         }
     }
 
-    return %factor;
+    return \%factor;
 }
 
 =head2 match
 
 Evaluates matching multiplications.
 
- %matches = match (\%factors);
+ $matches = match ($factors);
 
-The factors of each number within %factors will be multplicated against
-each other and results that equal the number itself, will be saved to %matches.
+The factors of each number within the hash ref $factors will be multplicated against
+each other and results that equal the number itself, will be saved to the hash ref $matches.
 The matches are accessible through the according numbers e.g. the first two numbers
-that matched 9, may be accessed by $matches{9}[0][0] and $matches{9}[0][1], the second
-ones by $matches{9}[1][0] and $matches{9}[1][1], and so on.
+that matched 9, may be accessed by $$matches{9}[0][0] and $$matches{9}[0][1], the second
+ones by $$matches{9}[1][0] and $$matches{9}[1][1], and so on.
 
 =cut
 
 sub match {
     my $data_ref = $_[0];
-    croak q~usage: match (\%factors)~
-      unless ref $data_ref eq 'HASH' && %$data_ref;
+    croak q~usage: match ($factors)~
+      unless %$data_ref && ref $data_ref eq 'HASH';
 
     my (%match, $i);
     foreach (keys %$data_ref) {
@@ -155,14 +155,14 @@ sub match {
         }
     }
 
-    return %match;
+    return \%match;
 }
 
 =head2 each_factor
 
 Returns each factor of a number in a scalar context.
 
- while ($factor = each_factor(\%factors, $number) {
+ while ($factor = each_factor ($number, $factors)) {
      print "$factor\n";
  }
 
@@ -173,9 +173,9 @@ after usage of each_factor().
 =cut
 
 sub each_factor {
-    my ($data_ref, $number) = @_;
-    croak q~usage: each_factor (\%factors, $number)~
-      unless ref $data_ref eq 'HASH' && $number;
+    my ($number, $data_ref) = @_;
+    croak q~usage: each_factor ($number, $factors)~
+      unless $number && ref $data_ref eq 'HASH';
 
     unless (${__PACKAGE__."::each_factor_$number"}) {
         @{__PACKAGE__."::each_factor_$number"} = @{$$data_ref{$number}};
@@ -192,7 +192,7 @@ sub each_factor {
 
 Returns each match of a number in a array context.
 
- while (@match = each_match(\%matches, $number) {
+ while (@match = each_match ($number, $matches)) {
      print "$number == $match[0] * $match[1]\n";
  }
 
@@ -203,16 +203,16 @@ after usage of each_match().
 =cut
 
 sub each_match {
-    my ($data_ref, $number) = @_;
-    croak q~usage: each_match (\%matches, $number)~
-      unless ref $data_ref eq 'HASH' && $number;
+    my ($number, $data_ref) = @_;
+    croak q~usage: each_match ($number, $matches)~
+      unless $number && ref $data_ref eq 'HASH';
 
     unless (${__PACKAGE__."::each_match_$number"}) {
         @{__PACKAGE__."::each_match_$number"} = @{$$data_ref{$number}};
         ${__PACKAGE__."::each_match_$number"} = 1;
     }
 
-    if (wantarray && @{__PACKAGE__."::each_match_$number"}) {
+    if (@{__PACKAGE__."::each_match_$number"} && wantarray) {
         my @match = (${__PACKAGE__."::each_match_$number"}[0][0], 
 	  ${__PACKAGE__."::each_match_$number"}[0][1]);
         splice (@{__PACKAGE__."::each_match_$number"}, 0, 1);

@@ -5,13 +5,13 @@ use warnings;
 
 use Math::Factor qw/factor match/;
 
-my (@numbers, %factors, %matches, $format_factors,
+my (@numbers, $factors, $matches, $format_factors,
     $format_match_number, $format_match_matches);
     
 @numbers = qw(9 30107);
 
-%factors = factor(\@numbers);
-%matches = match(\%factors);
+$factors = factor(\@numbers);
+$matches = match($factors);
 
 print <<'EOT';
 -------
@@ -24,12 +24,12 @@ my $ul;
 eval $format_factors; 
 croak $@ if $@;
 
-foreach (sort {$a <=> $b} keys %factors) {
+foreach (sort {$a <=> $b} keys %$factors) {
     $ul = '-' x length;
     write; local $, = "\t";
     
     print <<"EOT";
-@{$factors{$_}}
+@{$$factors{$_}}
 
 
 EOT
@@ -43,7 +43,7 @@ MATCHES
 EOT
 
 no warnings;
-foreach (sort {$a <=> $b} keys %matches) {
+foreach (sort {$a <=> $b} keys %$matches) {
     my $ul = '-' x length;
 
     eval $format_match_number;
@@ -54,7 +54,7 @@ foreach (sort {$a <=> $b} keys %matches) {
     eval $format_match_matches;
     croak $@ if $@;
 
-    for ($i = 0; $matches{$_}[$i]; $i++) { write }
+    for ($i = 0; $$matches{$_}[$i]; $i++) { write }
 
     print <<'EOT';
 
@@ -84,7 +84,7 @@ $ul
 $format_match_matches = '
     format =
 @<<<<<<<<<<<* @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-$matches{$_}[$i][0] $matches{$_}[$i][1]
+$$matches{$_}[$i][0] $$matches{$_}[$i][1]
 .
 ';
 }

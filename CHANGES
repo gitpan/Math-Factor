@@ -1,5 +1,8 @@
 Revision history for Perl extension Math::Factor.
 
+0.12 2004/01/13
+ - hashes are returned as refs.
+
 0.1 2004/01/12
  - minor additions.
 

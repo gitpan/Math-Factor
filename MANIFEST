@@ -1,8 +1,8 @@
-CHANGES
-MANIFEST
-META.yml
-Makefile.PL
-README
 bin/factor.pl
+CHANGES
 lib/Math/Factor.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
 t/Math-Factor.t
