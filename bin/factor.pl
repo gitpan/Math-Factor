@@ -3,8 +3,6 @@
 use strict;
 use warnings;
 
-$SIG{__WARN__} = sub { return '' };
-
 use Math::Factor qw(factor match);
 
 our (@numbers, $factors, $matches, %form, $ul, $i);
@@ -22,7 +20,7 @@ show_matches();
 sub show_factors {
     print <<'EOT';
 -------
-FACTORS
+factors
 -------
 
 EOT
@@ -40,7 +38,7 @@ EOT
 sub show_matches {	
     print <<'EOT';
 -------
-MATCHES
+matches
 -------
 
 EOT
@@ -48,18 +46,19 @@ EOT
     foreach (sort {$a <=> $b} keys %$matches) {
         local ($ul, $i);
         $ul = '-' x length;
-        formeval('match_number'); write
+        formeval('match_number'); write;
     
         formeval('match_matches'); 
         for ($i = 0; $$matches{$_}[$i]; $i++) { write }
 
-        print "\n\n";
+        print "\n";
     }
 }    
 
 sub formeval {
     my $ident = shift;
     
+    no warnings 'redefine';
     eval $form{$ident};
     if ($@) { require Carp; Carp::croak $@; }
 }

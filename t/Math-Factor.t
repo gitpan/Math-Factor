@@ -5,7 +5,7 @@ use warnings;
 
 use Test::More tests => 8;
 
-use Math::Factor q/:all/;
+use Math::Factor qw(factor match);
 
 my (@numbers, $factors, $matches);
 

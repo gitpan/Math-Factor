@@ -1,14 +1,14 @@
-# $Id: Factor.pm,v 0.19 2004/01/18 07:31:17 sts Exp $
+# $Id: Factor.pm,v 0.21 2004/01/18 07:31:17 sts Exp $
 
 package Math::Factor;
 
 use 5.006;
-use base(Exporter);
+use base qw(Exporter);
 use integer;
 use strict 'vars';
 use warnings;
 
-our $VERSION = '0.19';
+our $VERSION = '0.21';
 
 our (@EXPORT_OK, %EXPORT_TAGS, @subs_factor,
      @subs_match, @subs);
@@ -19,8 +19,6 @@ our (@EXPORT_OK, %EXPORT_TAGS, @subs_factor,
 
 @EXPORT_OK = @subs;
 %EXPORT_TAGS = (  all     =>    [ @subs ],
-                  factor  =>    [ @subs_factor ],
-                  match   =>    [ @subs_match ],
 );
 
 our $Skip_multiple;
@@ -69,7 +67,7 @@ Factorises numbers.
  $factors = factor (\@numbers);
 
 Each number within @numbers will be entirely factorised and its factors will be
-saved within the hash ref $factors, accessible by the number e.g the factors of 9 may
+saved within the hashref $factors, accessible by the number e.g the factors of 9 may
 be accessed by @{$$factors{9}}.
 
 Ranges may be evaluated by providing a two-dimensional array. 
@@ -110,7 +108,7 @@ sub factor {
 	}
 	$i ||= GROUND;
         for (; $i <= $limit; $i++) {
-	    last if $i > $limit / 2;
+	    last if $i > $number / 2;
             if ($number % $i == 0)  {  
                 push @{$factor{$number}}, $i;
             }
@@ -126,8 +124,8 @@ Evaluates matching multiplications.
 
  $matches = match ($factors);
 
-The factors of each number within the hash ref $factors will be multplicated against
-each other and results that equal the number itself, will be saved to the hash ref $matches.
+The factors of each number within the hashref $factors will be multplicated against
+each other and results that equal the number itself, will be saved to the hashref $matches.
 The matches are accessible through the according numbers e.g. the first two numbers
 that matched 9, may be accessed by $$matches{9}[0][0] and $$matches{9}[0][1], the second
 ones by $$matches{9}[1][0] and $$matches{9}[1][1], and so on.
@@ -178,7 +176,7 @@ sub match {
 
 =head2 each_factor
 
-Returns each factor of a number in a scalar context.
+Returns each factor of a number as string.
 
  while ($factor = each_factor ($number, $factors)) {
      print "$factor\n";
@@ -208,7 +206,7 @@ sub each_factor {
 
 =head2 each_match
 
-Returns each match of a number in a array context.
+Returns each match of a number as string.
 
  while (@match = each_match ($number, $matches)) {
      print "$number == $match[0] * $match[1]\n";
@@ -231,8 +229,7 @@ sub each_match {
     }
 
     if (@{__PACKAGE__."::each_match_$number"} && wantarray) {
-        my @match = (${__PACKAGE__."::each_match_$number"}[0][0], 
-	  ${__PACKAGE__."::each_match_$number"}[0][1]);
+        my @match = ${__PACKAGE__."::each_match_$number"}[0][0-1]; 
         splice @{__PACKAGE__."::each_match_$number"}, 0, 1;
         return @match;
     }
@@ -244,27 +241,10 @@ __END__
 
 =head1 EXPORT
 
-C<factor(), match(), each_factor(), each_match()> upon request.
+C<factor(), match(), each_factor(), each_match()> are exportable.
 
 B<TAGS>
 
 C<:all - *()>
-
-C<:factor - factor(), each_factor()>
-
-C<:match - match(), each_match()>
-
-=head1 SEE ALSO
-
-perl(1)
-
-=head1 LICENSE
-
-This program is free software; 
-you may redistribute it and/or modify it under the same terms as Perl itself.
-
-=head1 AUTHOR
-
-Steven Schubiger
 
 =cut
