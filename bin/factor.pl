@@ -4,19 +4,21 @@ use strict;
 use warnings;
 use Math::Factor qw(factor match);
 
-our(@numbers, $factors, $matches, %form, $ul, $i);
+our(%form, $ul, $i);
 
 #$Math::Factor::Skip_multiple = 1;
     
-@numbers = qw(9 30107);
+my @numbers = qw(9 30107);
 
-$factors = factor(\@numbers);
-$matches = match($factors);
+my $factors = factor(\@numbers);
+my $matches = match($factors);
 
-show_factors();
-show_matches();
+show_factors($factors);
+show_matches($matches);
 
 sub show_factors {
+    my $factors = shift;
+
     print <<'EOT';
 -------
 factors
@@ -35,7 +37,9 @@ EOT
     }
 }
 
-sub show_matches {	
+sub show_matches {
+    my $matches = shift;   
+	
     print <<'EOT';
 -------
 matches
@@ -51,7 +55,7 @@ EOT
     
         formeval('match_matches'); 
         for ($i = 0; $matches->{$_}[$i]; $i++) { write }
-        print "\n";
+	print "\n";
     }
 }    
 

@@ -1,7 +1,6 @@
 package Math::Factor;
 
-$VERSION = '0.23';
-
+$VERSION = '0.24';
 @subs = qw(
     factor
     match 
@@ -9,16 +8,13 @@ $VERSION = '0.23';
     each_match
 );
 @EXPORT_OK = @subs;
-%EXPORT_TAGS = (  all =>    [ @subs ],
-);
+%EXPORT_TAGS = (all => [ @subs ]);
 
 use strict 'vars';
 use vars qw($Skip_multiple);
 use integer;
 use base qw(Exporter);
 use Carp 'croak';
-
-sub GROUND { 2 }
 
 =head1 NAME
 
@@ -78,8 +74,10 @@ certain numbers may be entirely disabled by supplying *. 1-$ is equivalent to *.
 sub factor {
     my $numbers = shift;
     croak 'usage: factor(\@numbers)' unless @$numbers;
-
-    my(%factor, $number, $i, $limit);
+    
+    my $GROUND = 2;
+    
+    my(%factors, $number, $i, $limit);
     for (@$numbers) {
         $i = 0; 
         if (ref $_) { 
@@ -94,15 +92,15 @@ sub factor {
 	else { 
 	    $number = $limit = $_;
 	}
-	$i ||= GROUND;
+	$i ||= $GROUND;
         for (; $i <= $limit; $i++) {
 	    last if $i > ($number / 2);
             if ($number % $i == 0)  {  
-                push @{$factor{$number}}, $i;
+                push @{$factors{$number}}, $i;
             }
         }
     }
-    return \%factor;
+    return \%factors;
 }
 
 =head2 match

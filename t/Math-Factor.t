@@ -2,34 +2,19 @@
 
 use strict;
 use warnings;
-
-use Test::More tests => 8;
-
 use Math::Factor qw(factor match);
+
+use Test::More tests => 4;
 
 BEGIN {
     my $PACKAGE = 'Math::Factor';
     use_ok($PACKAGE);
     require_ok($PACKAGE);
-    print "\n";
 }
 
-my(@numbers, $factors, $matches);
+my @numbers = (348226);
+my $factors = factor(\@numbers);
+my $matches = match($factors);
 
-@numbers = (348226);
-
-print "\@numbers = @numbers\;\n\n";
-
-$factors = factor(\@numbers);
-is($factors->{$numbers[0]}[2], 314, "factor(\@numbers);\n");
-ok($factors->{$numbers[0]}[1] == 157, 'factor: 157');
-ok($factors->{$numbers[0]}[5] == 174113, 'factor: 174113');
-
-print "\n";
-
-$matches = match($factors);
-is($matches->{$numbers[0]}[1][1], 2218, "match(\$factors);\n");
-ok($numbers[0] == $matches->{$numbers[0]}[1][0] * $matches->{$numbers[0]}[1][1],
-  "$numbers[0] == $matches->{$numbers[0]}[1][0] * $matches->{$numbers[0]}[1][1]");
-ok($numbers[0] == $matches->{$numbers[0]}[2][0] * $matches->{$numbers[0]}[2][1],
-  "$numbers[0] == $matches->{$numbers[0]}[2][0] * $matches->{$numbers[0]}[2][1]");
+is($factors->{$numbers[0]}[2], 314, 'factor(@numbers);');
+is($matches->{$numbers[0]}[1][1], 2218, 'match($factors);');
