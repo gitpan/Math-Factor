@@ -1,7 +1,7 @@
 Math::Factor
 ============
 
-Factorise numbers and calculates matching multiplications.
+Factorise numbers and calculate matching multiplications
 
 INSTALLATION
 
@@ -16,8 +16,7 @@ SCRIPTS
 
 bin/factor.pl
 
-Interface to Math::Factor that factorises numbers
-and outputs matches.
+Factorises numbers and outputs matches.
 
 LICENSE
 

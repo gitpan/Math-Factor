@@ -1,35 +1,28 @@
-# $Id: Factor.pm,v 0.22 2004/01/18 07:31:17 sts Exp $
-
 package Math::Factor;
 
-use 5.006;
-use base qw(Exporter);
-use integer;
-use strict 'vars';
-use warnings;
+$VERSION = '0.23';
 
-our $VERSION = '0.22';
-
-our (@EXPORT_OK, %EXPORT_TAGS, @subs);
-
-@subs = qw(factor each_factor match each_match);
-
+@subs = qw(
+    factor
+    match 
+    each_factor 
+    each_match
+);
 @EXPORT_OK = @subs;
 %EXPORT_TAGS = (  all =>    [ @subs ],
 );
 
-our $Skip_multiple;
+use strict 'vars';
+use vars qw($Skip_multiple);
+use integer;
+use base qw(Exporter);
+use Carp 'croak';
 
 sub GROUND { 2 }
 
-sub croak {
-    require Carp;
-    &Carp::croak;
-}
-
 =head1 NAME
 
-Math::Factor - factorise numbers and calculate matching multiplications.
+Math::Factor - Factorise numbers and calculate matching multiplications
 
 =head1 SYNOPSIS
 
@@ -53,7 +46,7 @@ Math::Factor - factorise numbers and calculate matching multiplications.
 
 =head1 DESCRIPTION
 
-C<Math::Factor> factorises numbers by applying trial divison.
+Math::Factor factorises numbers by applying trial divison.
 
 =head1 FUNCTIONS
 
@@ -65,9 +58,9 @@ Factorises numbers.
 
 Each number within @numbers will be entirely factorised and its factors will be
 saved within the hashref $factors, accessible by the number e.g the factors of 9 may
-be accessed by @{$$factors{9}}.
+be accessed by @{$factors->{9}}.
 
-Ranges may be evaluated by providing a two-dimensional array. 
+Ranges may be evaluated by supplying a two-dimensional array. 
 
  @numbers = (
      [ 9, '1-6' ],
@@ -84,18 +77,17 @@ certain numbers may be entirely disabled by supplying *. 1-$ is equivalent to *.
 
 sub factor {
     my $numbers = shift;
-    croak q~Usage: factor(\@numbers)~ unless @$numbers;
+    croak 'usage: factor(\@numbers)' unless @$numbers;
 
-    my (%factor, $number, $i, $limit);
+    my(%factor, $number, $i, $limit);
     for (@$numbers) {
         $i = 0; 
         if (ref $_) { 
-	    $number = $$_[0];
-	    if ($$_[1] =~ /-/) { 
-    	        my @range = split '-', $$_[1];
+	    $number = $_->[0];
+	    if ($_->[1] =~ /-/) { 
+    	        my @range = split '-', $_->[1];
 		$i = $range[0];
-		if ($range[1] eq '$') { $limit = $number } 
-		else { $limit = $range[1] }
+		$limit = $range[1] eq '$' ? $number : $range[1];
 	    }
 	    else { $limit = $number } 
 	}
@@ -104,13 +96,12 @@ sub factor {
 	}
 	$i ||= GROUND;
         for (; $i <= $limit; $i++) {
-	    last if $i > $number / 2;
+	    last if $i > ($number / 2);
             if ($number % $i == 0)  {  
                 push @{$factor{$number}}, $i;
             }
         }
     }
-
     return \%factor;
 }
 
@@ -123,11 +114,11 @@ Evaluates matching multiplications.
 The factors of each number within the hashref $factors will be multplicated against
 each other and results that equal the number itself, will be saved to the hashref $matches.
 The matches are accessible through the according numbers e.g. the first two numbers
-that matched 9, may be accessed by $$matches{9}[0][0] and $$matches{9}[0][1], the second
-ones by $$matches{9}[1][0] and $$matches{9}[1][1], and so on.
+that matched 9, may be accessed by $matches->{9}[0][0] and $matches->{9}[0][1], the second
+ones by $matches->{9}[1][0] and $matches->{9}[1][1], and so on.
 
-If $Math::Factor::Skip_multiple is set true, matching multiplications that contain 
-multiplicated (small) factors will be dropped.
+If $Math::Factor::Skip_multiple is set to a true value, matching multiplications 
+that contain multiplicated (small) factors will be dropped.
 
 Example: 
 
@@ -141,12 +132,12 @@ Example:
 
 sub match {
     my $factors = shift;
-    croak q~Usage: match($factors)~ unless %$factors;
+    croak 'usage: match($factors)' unless %$factors;
 
-    my (%matches, $i, @previous_bases, $skip);
+    my(%matches, $i, @previous_bases, $skip);
     for (keys %$factors) {
         $i = 0;
-        my @cmp = my @base = @{$$factors{$_}};
+        my @cmp = my @base = @{$factors->{$_}};
         for my $base (@base) { 
             for my $cmp (@cmp) {
                 if ($cmp >= $base && $base * $cmp == $_) {
@@ -165,7 +156,6 @@ sub match {
             }
         }
     }
-
     return \%matches;
 }
 
@@ -184,19 +174,23 @@ after usage of each_factor().
 =cut
 
 sub each_factor {
-    my ($number, $factors) = @_;
-    croak q~Usage: each_factor($number, $factors)~
+    my($number, $factors) = @_;
+    croak 'usage: each_factor($number, $factors)'
       unless $number && %$factors;
 
-    unless (${__PACKAGE__."::each_factor_$number"}) {
-        @{__PACKAGE__."::each_factor_$number"} = @{$$factors{$number}};
-        ${__PACKAGE__."::each_factor_$number"} = 1;
+    my $FACTORS = __PACKAGE__."::each_factor_$number"; 
+       
+    unless (${$FACTORS}) {
+        @{$FACTORS} = @{$factors->{$number}};
+        ${$FACTORS} = 1;
     }
-
-    if (@{__PACKAGE__."::each_factor_$number"}) {
-        return shift @{__PACKAGE__."::each_factor_$number"};
+    if (@{$FACTORS}) {
+        return shift @{$FACTORS};
     }
-    else { ${__PACKAGE__."::each_factor_$number"} = 0; return }
+    else { 
+        ${$FACTORS} = 0; 
+	return ();
+    }
 }
 
 =head2 each_match
@@ -214,21 +208,25 @@ after usage of each_match().
 =cut
 
 sub each_match {
-    my ($number, $matches) = @_;
-    croak q~Usage: each_match($number, $matches)~
+    my($number, $matches) = @_;
+    croak 'usage: each_match($number, $matches)'
       unless $number && %$matches;
 
-    unless (${__PACKAGE__."::each_match_$number"}) {
-        @{__PACKAGE__."::each_match_$number"} = @{$$matches{$number}};
-        ${__PACKAGE__."::each_match_$number"} = 1;
+    my $MATCHES = __PACKAGE__."::each_match_$number";
+    
+    unless (${$MATCHES}) {
+        @{$MATCHES} = @{$matches->{$number}};
+        ${$MATCHES} = 1;
     }
-
-    if (@{__PACKAGE__."::each_match_$number"} && wantarray) {
-        my @match = ${__PACKAGE__."::each_match_$number"}[0][0-1]; 
-        splice @{__PACKAGE__."::each_match_$number"}, 0, 1;
+    if (wantarray && @{$MATCHES}) {
+        my @match = @{${$MATCHES}[0]}; 
+        shift @{$MATCHES};
         return @match;
     }
-    else { ${__PACKAGE__."::each_match_$number"} = 0; return }
+    else { 
+        ${$MATCHES} = 0; 
+	return (); 
+    }
 }
 
 1;

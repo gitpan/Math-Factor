@@ -2,10 +2,9 @@
 
 use strict;
 use warnings;
-
 use Math::Factor qw(factor match);
 
-our (@numbers, $factors, $matches, %form, $ul, $i);
+our(@numbers, $factors, $matches, %form, $ul, $i);
 
 #$Math::Factor::Skip_multiple = 1;
     
@@ -24,14 +23,15 @@ factors
 -------
 
 EOT
-
-    for (sort {$a <=> $b} keys %$factors) {
-        local ($ul, $,);   
+    
+    local $_;
+    for (sort { $a <=> $b } keys %$factors) {
+        local($ul, $,);   
         $ul = '-' x length;
         formeval('factors'); write; 
     
         $, = "\t"; 
-        print "@{$$factors{$_}}\n\n";
+        print "@{$factors->{$_}}\n\n";
     }
 }
 
@@ -43,14 +43,14 @@ matches
 
 EOT
 
-    for (sort {$a <=> $b} keys %$matches) {
-        local ($ul, $i);
+    local $_;
+    for (sort { $a <=> $b } keys %$matches) {
+        local($ul, $i);
         $ul = '-' x length;
         formeval('match_number'); write;
     
         formeval('match_matches'); 
-        for ($i = 0; $$matches{$_}[$i]; $i++) { write }
-
+        for ($i = 0; $matches->{$_}[$i]; $i++) { write }
         print "\n";
     }
 }    
@@ -60,7 +60,7 @@ sub formeval {
     
     no warnings 'redefine';
     eval $form{$ident};
-    if ($@) { require Carp; Carp::croak $@; }
+    die $@ if $@;
 }
 
 BEGIN {
@@ -83,6 +83,6 @@ $ul
     $form{match_matches} = '
     format =
 @<<<<<<<<<<<* @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-$$matches{$_}[$i][0], $$matches{$_}[$i][1]
+$matches->{$_}[$i][0], $matches->{$_}[$i][1]
 .';
 }
