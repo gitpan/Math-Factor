@@ -1,5 +1,8 @@
 Revision history for Perl extension Math::Factor.
 
+0.19 2004/01/19
+ - formats are not evaled in loops.
+
 0.17 2004/01/18
  - matching multiplications that contain smaller
    factors may be skipped.

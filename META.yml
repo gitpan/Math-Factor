@@ -6,5 +6,5 @@ requires:
     Exporter: 0
 distribution_type: module
 license: perl
-dist_abstract: factorise integers and calculate matching multiplications.
+dist_abstract: factorise numbers and calculate matching multiplications.
 dist_author: Steven Schubiger

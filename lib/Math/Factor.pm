@@ -1,4 +1,4 @@
-# $Id: Factor.pm,v 0.17 2004/01/18 07:31:17 sts Exp $
+# $Id: Factor.pm,v 0.19 2004/01/18 07:31:17 sts Exp $
 
 package Math::Factor;
 
@@ -8,7 +8,7 @@ use integer;
 use strict 'vars';
 use warnings;
 
-our $VERSION = '0.17';
+our $VERSION = '0.19';
 
 our (@EXPORT_OK, %EXPORT_TAGS, @subs_factor,
      @subs_match, @subs);
@@ -34,7 +34,7 @@ sub croak {
 
 =head1 NAME
 
-Math::Factor - factorise integers and calculate matching multiplications.
+Math::Factor - factorise numbers and calculate matching multiplications.
 
 =head1 SYNOPSIS
 
@@ -58,7 +58,7 @@ Math::Factor - factorise integers and calculate matching multiplications.
 
 =head1 DESCRIPTION
 
-see above.
+C<Math::Factor> factorises numbers by applying trial divison.
 
 =head1 FUNCTIONS
 

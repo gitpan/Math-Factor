@@ -30,7 +30,7 @@ EOT
     foreach (sort {$a <=> $b} keys %$factors) {
         local ($ul, $,);   
         $ul = '-' x length;
-        _formwrite('factors'); 
+        formeval('factors'); write; 
     
         $, = "\t"; 
         print "@{$$factors{$_}}\n\n";
@@ -48,22 +48,20 @@ EOT
     foreach (sort {$a <=> $b} keys %$matches) {
         local ($ul, $i);
         $ul = '-' x length;
-        _formwrite('match_number');
+        formeval('match_number'); write
     
-        for ($i = 0; $$matches{$_}[$i]; $i++) { 
-            _formwrite('match_matches'); 
-        }
+        formeval('match_matches'); 
+        for ($i = 0; $$matches{$_}[$i]; $i++) { write }
 
         print "\n\n";
     }
 }    
 
-sub _formwrite {
+sub formeval {
     my $ident = shift;
     
     eval $form{$ident};
     if ($@) { require Carp; Carp::croak $@; }
-    write;
 }
 
 BEGIN {
