@@ -13,7 +13,7 @@ BEGIN {
 }
 
 my @numbers = (348226);
-my $factors = factor( \@numbers );
+my $factors = factor( @numbers );
 my $matches = match( $factors );
 
 is( $factors->{$numbers[0]}[2], 314, 'factor( @numbers );' );

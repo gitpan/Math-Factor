@@ -1,6 +1,6 @@
 package Math::Factor;
 
-$VERSION = '0.25';
+$VERSION = '0.26';
 @subs = qw(
     factor
     match 
@@ -27,7 +27,7 @@ Math::Factor - Factorise numbers and calculate matching multiplications
  @numbers = qw(9 30107);
 
  # data manipulation
- $factors = factor( \@numbers );
+ $factors = factor( @numbers );
  $matches = match( $factors );
 
  # factors iteration
@@ -50,7 +50,7 @@ Math::Factor factorises numbers by applying trial divison.
 
 Factorises numbers.
 
- $factors = factor( \@numbers );
+ $factors = factor( @numbers );
 
 Each number within @numbers will be entirely factorised and its factors will be
 saved within the hashref $factors, accessible by the number e.g the factors of 9 may
@@ -72,14 +72,14 @@ certain numbers may be entirely disabled by supplying *. 1-$ is equivalent to *.
 =cut
 
 sub factor {
-    my ($numbers) = @_;
-    croak 'usage: factor( \@numbers )' unless @$numbers;
+    my (@numbers) = @_;
+    croak 'usage: factor( @numbers )' unless @numbers;
     
     my $GROUND = 2; 
     
     my (%factors, $number, $i, $limit);
     
-    for my $item (@$numbers) {
+    for my $item (@numbers) {
         $i = 0; 
         if (ref $item) { 
 	    $number = $item->[0];
@@ -151,8 +151,8 @@ sub match {
 		    if ($Skip_multiple) {
 			$skip = 0;
 			
-			for (@previous_bases) {
-			    $skip = 1 if $base % $number == 0;
+			for my $prev_base (@previous_bases) {
+			    $skip = 1    if ($base % $prev_base == 0);
 		        }
 	            }    
 	            unless ($skip) {
@@ -172,7 +172,7 @@ sub match {
 
 Returns each factor of a number as string.
 
- while ($factor = each_factor($number, $factors)) {
+ while ($factor = each_factor( $number, $factors )) {
      print "$factor\n";
  }
 

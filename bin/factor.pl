@@ -10,7 +10,7 @@ our (%form, $ul, $i);
     
 my @numbers = qw(9 30107);
 
-my $factors = factor( \@numbers );
+my $factors = factor( @numbers );
 my $matches = match( $factors );
 
 show_factors( $factors );
