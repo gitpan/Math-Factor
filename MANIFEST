@@ -1,0 +1,8 @@
+CHANGES
+MANIFEST
+META.yml
+Makefile.PL
+README
+bin/factor.pl
+lib/Math/Factor.pm
+t/Math-Factor.t
