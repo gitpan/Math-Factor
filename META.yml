@@ -6,4 +6,4 @@ requires:
     Exporter: 0
 distribution_type: module
 license: perl
-dist_abstract: Factorise numbers and calculate matching multiplications.
+dist_abstract: Factorise numbers and calculate matching multiplications
