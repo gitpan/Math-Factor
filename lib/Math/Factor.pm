@@ -1,13 +1,13 @@
-#
-# $Id: Factor.pm,v 0.12 2004/01/13 15:01:06 sts Exp $
+# $Id: Factor.pm,v 0.13 2004/01/13 15:01:06 sts Exp $
 
 package Math::Factor;
 
-our $VERSION = '0.12';
-
+use 5.006;
 use integer;
 use strict 'vars';
 use warnings;
+
+our $VERSION = '0.13';
 
 use Exporter;
 use base qw(Exporter);
@@ -242,7 +242,8 @@ perl(1)
 
 =head1 LICENSE
 
-This program is free software; you may redistribute it and/or modify it under the same terms as Perl itself.
+This program is free software; 
+you may redistribute it and/or modify it under the same terms as Perl itself.
 
 =head1 AUTHOR
 
