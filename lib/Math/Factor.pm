@@ -1,4 +1,4 @@
-# $Id: Factor.pm,v 0.16 2004/01/13 15:01:06 sts Exp $
+# $Id: Factor.pm,v 0.17 2004/01/18 07:31:17 sts Exp $
 
 package Math::Factor;
 
@@ -8,7 +8,7 @@ use integer;
 use strict 'vars';
 use warnings;
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 our (@EXPORT_OK, %EXPORT_TAGS, @subs_factor,
      @subs_match, @subs);
@@ -23,7 +23,9 @@ our (@EXPORT_OK, %EXPORT_TAGS, @subs_factor,
                   match   =>    [ @subs_match ],
 );
 
-sub GROUND { 1 }
+our $Skip_multiple;
+
+sub GROUND { 2 }
 
 sub croak {
     require Carp;
@@ -106,9 +108,10 @@ sub factor {
 	else { 
 	    $number = $limit = $_;
 	}
-	$i = GROUND unless $i;
+	$i ||= GROUND;
         for (; $i <= $limit; $i++) {
-            if ($number % $i == 0)  {
+	    last if $i > $limit / 2;
+            if ($number % $i == 0)  {  
                 push @{$factor{$number}}, $i;
             }
         }
@@ -129,6 +132,17 @@ The matches are accessible through the according numbers e.g. the first two numb
 that matched 9, may be accessed by $$matches{9}[0][0] and $$matches{9}[0][1], the second
 ones by $$matches{9}[1][0] and $$matches{9}[1][1], and so on.
 
+If $Math::Factor::Skip_multiple is set true, matching multiplications that contain 
+multiplicated (small) factors will be dropped.
+
+Example: 
+
+ # accepted 
+ 30107 == 11 * 2737  
+
+ # dropped
+ 30107 == 77 * 391
+
 =cut
 
 sub match {
@@ -136,17 +150,23 @@ sub match {
     croak q~usage: match ($factors)~
       unless %$factors && ref $factors eq 'HASH';
 
-    my (%matches, $i);
+    my (%matches, $i, @previous_bases, $skip);
     foreach (keys %$factors) {
         $i = 0;
         my @cmp = my @base = @{$$factors{$_}};
-        foreach my $base (@base) {
+        foreach my $base (@base) { 
             foreach my $cmp (@cmp) {
-                if ($cmp >= $base) {
-                    if ($base * $cmp == $_) {
-                        $matches{$_}[$i][0] = $base;
-                        $matches{$_}[$i][1] = $cmp;
-                        $i++;
+                if ($cmp >= $base && $base * $cmp == $_) {
+		    if ($Skip_multiple) {
+			$skip = 0;
+			foreach (@previous_bases) {
+			    $skip = 1 if $base % $_ == 0;
+		        }
+	            }    
+	            if (!$skip) {
+                        $matches{$_}[$i][0]   = $base;
+                        $matches{$_}[$i++][1] = $cmp;
+			push @previous_bases, $base if $Skip_multiple;
                     }
                 }
             }

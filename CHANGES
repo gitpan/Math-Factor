@@ -1,5 +1,9 @@
 Revision history for Perl extension Math::Factor.
 
+0.17 2004/01/18
+ - matching multiplications that contain smaller
+   factors may be skipped.
+
 0.16 2004/01/17
  - factor.pl revisioned.
 

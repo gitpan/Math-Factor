@@ -8,6 +8,8 @@ $SIG{__WARN__} = sub { return '' };
 use Math::Factor qw(factor match);
 
 our (@numbers, $factors, $matches, %form, $ul, $i);
+
+#$Math::Factor::Skip_multiple = 1;
     
 @numbers = qw(9 30107);
 
