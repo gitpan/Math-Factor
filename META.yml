@@ -1,9 +1,11 @@
---- #YAML:1.0
-module_name: Math-Factor
-dist_version_from: lib/Math/Factor.pm
-installdirs: site
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         Math-Factor
+version:      0.29
+version_from: lib/Math/Factor.pm
+installdirs:  site
 requires:
-    Exporter: 0
+    Exporter:                      0
+
 distribution_type: module
-license: perl
-dist_abstract: Factorise numbers and calculate matching multiplications
+generated_by: ExtUtils::MakeMaker version 6.17

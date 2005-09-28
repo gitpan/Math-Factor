@@ -1,20 +1,20 @@
-#! /usr/local/bin/perl
+#!/usr/bin/perl
 
 use strict;
 use warnings;
-use Math::Factor qw(factor match);
 
+use Math::Factor ':all';
 use Test::More tests => 4;
 
 BEGIN {
     my $PACKAGE = 'Math::Factor';
-    use_ok( $PACKAGE );
-    require_ok( $PACKAGE );
+    use_ok($PACKAGE);
+    require_ok($PACKAGE);
 }
 
-my @numbers = (348226);
-my $factors = factor( @numbers );
-my $matches = match( $factors );
+my $number = 348226;
+my @factors = factors($number);
+my @matches = matches($number, @factors);
 
-is( $factors->{$numbers[0]}[2], 314, 'factor( @numbers );' );
-is( $matches->{$numbers[0]}[1][1], 2218, 'match( $factors );' );
+is($factors[2], 314, 'factors($number);');
+is($matches[1][1], 2218, 'matches($number, @factors);');

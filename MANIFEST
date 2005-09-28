@@ -1,4 +1,5 @@
 bin/factor.pl
+Build.PL
 Changes
 lib/Math/Factor.pm
 Makefile.PL

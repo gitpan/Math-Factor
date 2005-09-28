@@ -1,66 +1,60 @@
-#! /usr/bin/perl
+#!/usr/bin/perl
 
 use strict;
 use warnings;
-use Math::Factor qw(factor match);
 
-our (%form, $ul, $i);
+use Math::Factor qw(factors matches);
+
+our (%form, $i, $matches, $ul);
 
 #$Math::Factor::Skip_multiple = 1;
     
-my @numbers = qw(9 30107);
+my $number = 30107;
 
-my $factors = factor( @numbers );
-my $matches = match( $factors );
+my @factors = factors($number);
+my @matches = matches($number, @factors);
 
-show_factors( $factors );
-show_matches( $matches );
+show_factors($number, \@factors);
+show_matches($number, \@matches);
 
 sub show_factors {
-    my ($factors) = @_;
+    my ($number, $factors) = @_;
 
-    print <<'EOT';
+    print <<'HEADER';
 -------
 factors
 -------
 
-EOT
-    
-    local $_;
-    for (sort { $a <=> $b } keys %$factors) {
-        local ($ul, $,);   
-        $ul = '-' x length;
+HEADER
+     
+    local $ul = '-' x length($number);
 	
-        formeval( 'factors' ); 
-	write; 
+    formeval('factors');
+    write; 
     
-        $, = "\t"; 
-        print "@{$factors->{$_}}\n\n";
-    }
+    local $, = "\t"; 
+    print "@$factors\n\n";
 }
 
 sub show_matches {
-    my ($matches) = @_;   
+    my ($number) = shift;
+    local ($matches) = @_;   
 	
-    print <<'EOT';
+    print <<'HEADER';
 -------
 matches
 -------
 
-EOT
+HEADER
 
-    local $_;
-    for (sort { $a <=> $b } keys %$matches) {
-        local ($ul, $i);
-        $ul = '-' x length;
+    local $ul = '-' x length($number);
 	
-        formeval( 'match_number' ); 
-	write;
+    formeval('match_number'); 
+    write;
     
-        formeval( 'match_matches' ); 
-        for ($i = 0; $matches->{$_}[$i]; $i++) { write }
-	print "\n";
-    }
+    formeval('match_matches'); 
+    for (local $i = 0; $matches->[$i]; $i++) { write }
+    print "\n";
 }    
 
 sub formeval {
@@ -75,7 +69,7 @@ BEGIN {
     $form{factors} = '
     format =
 @<<<<<<<<<<<<<<<<<<<<<<<<<
-$_
+$number
 @<<<<<<<<<<<<<<<<<<<<<<<<<
 $ul
 .';
@@ -83,7 +77,7 @@ $ul
     $form{match_number} = '
     format =
 @<<<<<<<<<<<<<<<<<<<<<<<<<
-$_
+$number
 @<<<<<<<<<<<<<<<<<<<<<<<<<
 $ul
 .';
@@ -91,6 +85,6 @@ $ul
     $form{match_matches} = '
     format =
 @<<<<<<<<<<<* @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-$matches->{$_}[$i][0], $matches->{$_}[$i][1]
+$matches->[$i][0], $matches->[$i][1]
 .';
 }
